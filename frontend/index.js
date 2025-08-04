@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Shield, User, LogOut, AlertTriangle, BarChart, KeyRound, PlayCircle, Info, XCircle, CheckCircle, Database, FileWarning, PieChart, ShoppingCart } from 'lucide-react';
 import { Chart, registerables } from 'chart.js';
+import InfoCard from './components/InfoCard';
+import ShopStatsCard from './components/ShopStatsCard';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -51,16 +53,16 @@ export default function App() {
   const [blockedAttempts, setBlockedAttempts] = useState(0);
   const [attackStatus, setAttackStatus] = useState('idle');
   const [attackResults, setAttackResults] = useState(null);
-  const [compromisedAccount, setCompromisedAccount] = useState(null);
-  const [shopCart, setShopCart] = useState([]);
-  const [isBackendConnected, setIsBackendConnected] = useState(true); // Assume connected initially
-  
-  // --- SIMULATED DATABASE ---
-  const [databaseLogs, setDatabaseLogs] = useState([]);
+const [compromisedAccount, setCompromisedAccount] = useState(null);
+const [shopCart, setShopCart] = useState([]);
+const [isBackendConnected, setIsBackendConnected] = useState(true); // Assume connected initially
 
-  const saveLogToDatabase = (log) => {
-    setDatabaseLogs(prevLogs => [...prevLogs, log]);
-  };
+// --- SIMULATED DATABASE ---
+const [databaseLogs, setDatabaseLogs] = useState([]);
+
+const saveLogToDatabase = (log) => {
+  setDatabaseLogs(prevLogs => [...prevLogs, log]);
+};
   
   const fetchShopCart = async (token) => {
       if (!token || !isBackendConnected) return;
@@ -79,6 +81,15 @@ export default function App() {
           setShopCart([]);
       }
   };
+
+  useEffect(() => {
+      let interval;
+      if (user?.token) {
+          fetchShopCart(user.token);
+          interval = setInterval(() => fetchShopCart(user.token), 5000);
+      }
+      return () => clearInterval(interval);
+  }, [user, isBackendConnected]);
 
 
   // --- API Simulation ---
@@ -340,7 +351,7 @@ const Dashboard = ({ user, onLogout, loginAttempts, blockedAttempts, onAttack, a
 };
 
 // --- CHILD COMPONENTS ---
-const InfoCard = ({ title, icon, children }) => (<div className="bg-gray-800 p-6 rounded-xl shadow-lg h-full"><div className="flex items-center gap-3 mb-4"><div className="bg-blue-900/50 p-2 rounded-full">{icon}</div><h2 className="text-xl font-semibold">{title}</h2></div><div>{children}</div></div>);
+
 const StatCard = ({ title, value, icon }) => (<div className="bg-gray-800 p-6 rounded-xl shadow-lg"><div className="flex items-center justify-between"><div><p className="text-gray-400">{title}</p><p className="text-4xl font-bold">{value}</p></div><div className="bg-blue-900/50 p-3 rounded-full">{icon}</div></div></div>);
 const AttackCard = ({ onAttack, status, results, user }) => (<InfoCard title="Threat Simulation" icon={<AlertTriangle />}><p className="text-sm text-gray-400 mb-4">Simulate a credential stuffing attack against the <span className="font-bold text-yellow-300">{user.username.split('@')[0]}</span> account to test the security systems.</p><button onClick={onAttack} disabled={status === 'running'} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"><PlayCircle size={20} />{status === 'running' ? 'Attack in Progress...' : 'Start Attack'}</button>{status === 'running' && <div className="mt-4 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div><p className="text-sm text-blue-300 mt-2">Sending requests...</p></div>}{status === 'finished' && results && <div className="mt-4 p-4 bg-gray-900 rounded-lg border border-gray-700"><h3 className="font-bold text-center mb-2">Simulation Complete</h3><div className="flex justify-around text-center"><div><p className="text-gray-400 text-sm">Total</p><p className="text-2xl font-bold">{results.total}</p></div><div><p className="text-green-400 text-sm">Successful</p><p className="text-2xl font-bold text-green-400">{results.success}</p></div><div><p className="text-red-400 text-sm">Blocked</p><p className="text-2xl font-bold text-red-400">{results.blocked}</p></div></div></div>}</InfoCard>);
 
@@ -374,31 +385,6 @@ const CompromisedCredentialCard = ({ account }) => (
     </div>
 );
 
-const ShopStatsCard = ({ cart, isBackendConnected }) => {
-    const itemCount = isBackendConnected ? cart.length : 'N/A';
-    const totalValue = isBackendConnected ? cart.reduce((sum, item) => sum + item.price, 0) : 0;
-
-    return (
-        <InfoCard title="Demo Shop Status" icon={<ShoppingCart />}>
-            <div className="space-y-2">
-                <div>
-                    <p className="text-gray-400">Items in Cart</p>
-                    <p className="text-2xl font-bold">{itemCount}</p>
-                </div>
-                <div>
-                    <p className="text-gray-400">Total Cart Value</p>
-                    <p className="text-2xl font-bold">${isBackendConnected ? totalValue.toFixed(2) : '0.00'}</p>
-                </div>
-                <p className="text-xs text-gray-500 pt-2">
-                    {isBackendConnected 
-                        ? "This is the data at risk of being exposed in a successful credential stuffing attack."
-                        : "Connect to the backend to see live cart data."
-                    }
-                </p>
-            </div>
-        </InfoCard>
-    );
-};
 
 const PieChartCard = ({ user }) => {
     const chartRef = useRef(null);
