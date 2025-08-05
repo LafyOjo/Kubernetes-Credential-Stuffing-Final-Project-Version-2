@@ -7,7 +7,7 @@ split into three main parts:
 * **backend/** – FastAPI application providing authentication, shopping and
   metrics endpoints.
 * **frontend/** – React dashboard demonstrating the attacks and defences.
-* **demo-shop/** – simple static shop used by the demos.
+* **shop-ui/** – simple static shop used by the demos.
 
 ## Running the backend
 
@@ -18,5 +18,5 @@ uvicorn backend.app:app --reload
 ```
 
 The frontend code can be integrated into any React build process and the demo
-shop can be opened directly in a browser by loading `demo-shop/index.html`.
+shop can be opened directly in a browser by loading `shop-ui/index.html`.
 
