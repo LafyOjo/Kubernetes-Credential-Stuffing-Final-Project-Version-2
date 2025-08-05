@@ -52,3 +52,21 @@ kubectl port-forward svc/kube-prom-grafana -n monitoring 3001:80
 
 The backend uses `DEMO_SHOP_URL` and the React app uses `REACT_APP_SHOP_URL` to reach the shop at `http://localhost:3005`.
 
+## Forwarding shop activity to the API
+
+To surface login and registration events from the demo shop in the APIShield+
+dashboard, enable API forwarding in the shop configuration:
+
+1. Copy `shop-ui/.env.example` to `shop-ui/.env`.
+2. Ensure the following variables are set in the `.env` file:
+
+   ```env
+   FORWARD_API=true
+   API_BASE=http://localhost:8001
+   API_KEY=<same ZERO_TRUST_API_KEY as the API backend>
+   ```
+
+`FORWARD_API` toggles whether the shop sends actions to the backend API.
+`API_BASE` should point to the API's base URL and `API_KEY` must match the
+`ZERO_TRUST_API_KEY` configured for the API so requests are authorised.
+
