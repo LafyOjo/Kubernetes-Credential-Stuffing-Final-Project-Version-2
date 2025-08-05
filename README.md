@@ -38,3 +38,17 @@ install dependencies (`npm install`) and run (`npm start`) if not using Docker.
 The demo shop in `shop-ui/` is a static site that can be served by any web
 server or opened directly in a browser via `shop-ui/index.html`.
 
+
+## Port-forwarding services
+
+When running in Kubernetes, expose services locally with:
+
+```bash
+kubectl port-forward svc/front-end -n demo-shop 3005:80        # Demo Shop UI
+kubectl port-forward svc/detector -n demo 8001:8001            # detector API
+kubectl port-forward svc/kube-prom-prometheus -n monitoring 9090
+kubectl port-forward svc/kube-prom-grafana -n monitoring 3001:80
+```
+
+The backend uses `DEMO_SHOP_URL` and the React app uses `REACT_APP_SHOP_URL` to reach the shop at `http://localhost:3005`.
+
