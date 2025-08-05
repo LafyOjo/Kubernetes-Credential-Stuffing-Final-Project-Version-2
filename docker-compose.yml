@@ -15,10 +15,8 @@ services:
     volumes:
       - ./frontend:/app
   shop-ui:
-    build: ./demo-shop
+    build: ./shop-ui
     ports:
-      - "3001:3001"
+      - "3001:80"
     depends_on:
       - backend
-    volumes:
-      - ./demo-shop:/app
