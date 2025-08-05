@@ -8,3 +8,5 @@ python-jose[cryptography]
 python-multipart
 numpy
 scikit-learn
+
+email-validator
