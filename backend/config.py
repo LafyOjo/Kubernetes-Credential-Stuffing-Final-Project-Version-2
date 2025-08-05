@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Application configuration loaded from environment variables."""
@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     ANOMALY_DETECTION_ENABLED: bool = True
     ANOMALY_MODEL: str = "isolation_forest"
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
